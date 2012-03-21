@@ -1,0 +1,65 @@
+{{ "{% extends '::base.html.twig' %}" }}
+
+{{ "{% block css %}" }}
+{{ "{{ parent() }}" }}
+<link href='{{ "{{ asset('/css/admin/base.css') }}" }}' type="text/css" rel="stylesheet" />
+<link href='{{ "{{ asset('/css/admin/edit.css') }}" }}' type="text/css" rel="stylesheet" />
+{{ "{% endblock %}" }}
+
+{{ "{% block js %}" }}
+{{ "{{ parent() }}" }}
+<script type="text/javascript">
+
+     Event.on(window,'load', function() {
+    
+        live.forms.get('{{ route_name_prefix }}_update').success(function(form) {
+        
+           // open modal
+            live.loader.display({
+                title: 'Updating {{ entity }}',
+                height:75,
+                width:300,
+                top:250,
+                img:'/img/public/loading.gif'
+            }); 
+        
+            form.request({
+            
+                onSuccess:function() {
+                
+                    live.loader.close();
+                    
+                    window.location = "{{ "{{ path('"~ route_name_prefix ~"_edit', { 'id': entity.id }) }}" }}";
+                }
+                
+            });    
+            
+        });
+        
+        live.forms.get('{{ route_name_prefix }}_update').failure(function() { 
+            alert('The form did not validate');     
+        });
+        
+    });
+    
+</script>
+{{ "{% endblock %}" }}
+
+{{ "{% block module %}" }}
+
+<div class="view-container edit-view wrapper">
+
+    <h1 class="view-header">Update {{ entity }}</h1>
+    
+    {% set hide_edit, hide_delete = true, false %}
+    {% include 'views/actions/edit.actions.html.twig' %}
+
+    <form class="live-form" name='{{ route_name_prefix }}_update' id='{{ route_name_prefix }}_update' action="{{ "{{ path('"~ route_name_prefix ~"_update', { 'id': entity.id }) }}" }}" method="post" {{ "{{ form_enctype(edit_form) }}" }}>
+        {{ "{{ form_widget(edit_form) }}" }}
+        <p>
+            <button class="button-green" type="submit">Update {{ entity }}</button>
+        </p>
+    </form>
+
+</div>
+{{ "{% endblock %}" }}

@@ -1,0 +1,81 @@
+{{ "{% extends '::base.html.twig' %}" }}
+
+{{ "{% block css %}" }}
+{{ "{{ parent() }}" }}
+<link href='{{ "{{ asset('/css/admin/base.css') }}" }}' type="text/css" rel="stylesheet" />
+<link href='{{ "{{ asset('/css/admin/list.css') }}" }}' type="text/css" rel="stylesheet" />
+{{ "{% endblock %}" }}
+
+{{ "{% block module %}" }}
+<div class="view-container list-view wrapper">
+
+    <h1 class="view-header">{{ entity }} List</h1>
+    
+    <div class="toolbar wrapper">
+     {% if 'new' in actions %}
+   
+            <a class="toolbar-control button button-green" href="{{ "{{ path('"~ route_name_prefix ~"_new') }}" }}">
+                New {{ entity }}
+            </a>
+            
+    {% endif %}
+    </div>
+    
+   <table class="list-view-table" cellspacing="0" cellpadding="10">
+   
+        <thead>
+            <tr>
+            {%- for field, metadata in fields %}
+    
+                <th>{{ field|capitalize }}</th>
+    
+            {%- endfor %}
+    
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{ '{% for entity in entities %}' }}
+            <tr class="list-item">
+    
+        {%- for field, metadata in fields %}
+            {%- if loop.first and ('show' in actions) %}
+    
+                <td><a class="list-item-control" href="{{ "{{ path('"~ route_name_prefix ~"_show', { 'id': entity.id }) }}" }}">{{ '{{ entity.'~ field|replace({'_': ''}) ~' }}' }}</a></td>
+    
+            {%- elseif metadata.type in ['date', 'datetime'] %}
+    
+                <td>{{ '{% if entity.'~ field|replace({'_': ''}) ~' %}{{ entity.'~ field|replace({'_': ''}) ~'|date(\'Y-m-d H:i:s\') }}{% endif%}' }}</td>
+    
+            {%- else %}
+    
+                <td>{{ '{{ entity.'~ field|replace({'_': ''}) ~' }}' }}</td>
+    
+            {%- endif %}
+    
+            {%- if loop.last %}
+    
+               <td class="list-item-controls"> 
+               
+                    {%- for action in record_actions %}
+
+                    <a class="list-item-control"  href="{{ "{{ path('"~ route_name_prefix ~"_"~ action ~"', { 'id': entity.id }) }}" }}">
+                        {{ action }}
+                    </a>
+                    
+                    {%- endfor %}
+                  
+                </td>
+    
+            {%- endif %}
+        {%- endfor %}
+    
+            </tr>
+        {{ '{% endfor %}' }}
+        </tbody>
+        
+    </table>
+    
+</div>
+
+{{ "{% endblock %}" }}
